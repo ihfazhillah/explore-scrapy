@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import scrapy
 
 
@@ -7,6 +8,10 @@ class IbmandiriSpider(scrapy.Spider):
     allowed_domains = ['ib.bankmandiri.co.id']
     start_urls = ['https://ib.bankmandiri.co.id/retail/Login.do?action=form&lang=in_ID']
 
+    def __init__(self, to_crawl='ballance', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.to_crawl = to_crawl
+
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super(IbmandiriSpider, cls).from_crawler(crawler, *args, **kwargs)
@@ -14,9 +19,11 @@ class IbmandiriSpider(scrapy.Spider):
         return spider
 
     def parse(self, response):
+        user_id = os.environ['IBMANDIRI_USERID']
+        password = os.environ['IBMANDIRI_PASS']
         return scrapy.FormRequest.from_response(
             response,
-            formdata={'userID': self.userID, 'password': self.password},
+            formdata={'userID': user_id, 'password': password},
             formname='LoginForm',
             callback=self.after_login
         )
@@ -49,14 +56,17 @@ class IbmandiriSpider(scrapy.Spider):
                 account_id = option.extract()
                 break
         if account_id:
-            return scrapy.Request(
-                'https://ib.bankmandiri.co.id/retail/AccountDetail.do?action=result&ACCOUNTID=%s' % account_id,
-                callback=self.parse_check_saldo_page
-            )
+            if self.to_crawl == 'ballance':
+                return scrapy.Request(
+                    'https://ib.bankmandiri.co.id/retail/AccountDetail.do?action=result&ACCOUNTID=%s' % account_id,
+                    callback=self.parse_check_saldo_page
+                )
+            else:
+                return {"result": "hello world"}
         raise scrapy.exceptions.CloseSpider('Cannot get account id')
 
     def parse_check_saldo_page(self, response):
-        return {'saldo': response.css('#accbal::text').extract()[0].strip().replace('\xa0', ' ')}
+        return {'saldo': response.css('#accbal::text').extract_first().strip().replace('\xa0', ' ')}
 
     def spider_idle(self, spider):
         req = scrapy.Request(
