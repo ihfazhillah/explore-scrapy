@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import scrapy
+from scrapy.loader import ItemLoader
+
+from ..items import IbMandiriBallance
 
 
 class IbmandiriSpider(scrapy.Spider):
@@ -66,7 +69,9 @@ class IbmandiriSpider(scrapy.Spider):
         raise scrapy.exceptions.CloseSpider('Cannot get account id')
 
     def parse_check_saldo_page(self, response):
-        return {'saldo': response.css('#accbal::text').extract_first().strip().replace('\xa0', ' ')}
+        il = ItemLoader(item=IbMandiriBallance(), response=response)
+        il.add_css('ballance', '#accbal::text')
+        return il.load_item()
 
     def spider_idle(self, spider):
         req = scrapy.Request(
