@@ -6,7 +6,7 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-from scrapy.loader.processors import MapCompose, TakeFirst
+from scrapy.loader.processors import MapCompose, TakeFirst, Join
 
 
 class IdIbankingItem(scrapy.Item):
@@ -18,6 +18,7 @@ class IdIbankingItem(scrapy.Item):
 def replace(value):
     return value.strip().replace('\xa0', ' ')
 
+
 class IbMandiriBallance(scrapy.Item):
     ballance = scrapy.Field(
         input_processor=MapCompose(replace),
@@ -25,4 +26,16 @@ class IbMandiriBallance(scrapy.Item):
     )
 
 
-    
+class IbMandiriSentence(scrapy.Item):
+    tanggal = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    keterangan = scrapy.Field(
+        output_processor=Join('\n')
+    )
+    keluar = scrapy.Field(
+        output_processor=TakeFirst()
+    )
+    masuk = scrapy.Field(
+        output_processor=TakeFirst()
+    )
