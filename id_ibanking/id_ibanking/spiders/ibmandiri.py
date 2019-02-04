@@ -16,6 +16,7 @@ class IbmandiriSpider(scrapy.Spider):
     def __init__(self, to_crawl='ballance', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.to_crawl = to_crawl
+        self.last_ballance = 0
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -107,6 +108,9 @@ class IbmandiriSpider(scrapy.Spider):
 
     def parse_mutation_page(self, response):
 
+        # get the last ballance
+        self.last_ballance = float(response.css('#openingbal > span::text').extract_first().replace('.', '').replace(',', '.'))
+
         # yield {'hello': 'world'}
         # yield {'response': response.text}
 
@@ -127,6 +131,7 @@ class IbmandiriSpider(scrapy.Spider):
             loader.add_xpath('keterangan', './td[2]//text()')
             loader.add_xpath('keluar', './td[3]/text()')
             loader.add_xpath('masuk', './td[4]/text()')
+
             yield loader.load_item()
 
     def parse_check_saldo_page(self, response):

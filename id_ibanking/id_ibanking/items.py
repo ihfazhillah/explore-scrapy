@@ -27,6 +27,9 @@ class IbMandiriBallance(scrapy.Item):
 
 
 class IbMandiriSentence(scrapy.Item):
+    spider = scrapy.Field()
+    ballance = scrapy.Field()
+    hash_id = scrapy.Field()
     tanggal = scrapy.Field(
         output_processor=TakeFirst()
     )

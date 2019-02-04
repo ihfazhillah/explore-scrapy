@@ -65,9 +65,12 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'id_ibanking.pipelines.IdIbankingPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'id_ibanking.pipelines.IdIbankingHashPipeline': 100,
+    'id_ibanking.pipelines.IdIbankingParseFloatPipeline': 200,
+    'id_ibanking.pipelines.AddBallancePipeline': 300,
+    # 'id_ibanking.pipelines.IdIbankingPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
