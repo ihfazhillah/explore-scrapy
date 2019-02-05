@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import calendar
+import datetime
 import os
 
 import scrapy
@@ -13,10 +15,18 @@ class IbmandiriSpider(scrapy.Spider):
     start_urls = [
         'https://ib.bankmandiri.co.id/retail/Login.do?action=form&lang=in_ID']
 
-    def __init__(self, to_crawl='ballance', *args, **kwargs):
+    def __init__(self, to_crawl='ballance', month=None, year=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.to_crawl = to_crawl
         self.last_ballance = 0
+        if month:
+            self.month = month
+        else:
+            self.month = datetime.date.today().month
+        if year:
+            self.year = year
+        else:
+            self.year = datetime.date.today().year
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -82,15 +92,28 @@ class IbmandiriSpider(scrapy.Spider):
     def post_mutasi_form(self, response):
         account_id = response.meta['account_id']
 
+        last_day = calendar.monthrange(int(self.year), int(self.month))[1]
+        today = datetime.date.today()
+        if today.day < last_day and today.month == int(self.month) :
+            last_day = today.day
+
+        from_day = 1
+        six_month_ago = today - datetime.timedelta(days=6*30)
+        if (today - datetime.timedelta(days=6*30)).month == int(self.month) :
+            from_day = today.day
+
+        if six_month_ago.month < int(self.month) and int(self.year) > six_month_ago.year:
+            raise scrapy.DropItem('only six month query accepted')
+
 
         data = {
             'fromAccountID': account_id,
-            'fromDay': '1',
-            'fromMonth': '1',
-            'fromYear': '2019',
-            'toDay': '31',
-            'toMonth': '1',
-            'toYear': '2019',
+            'fromDay': str(from_day),
+            'fromMonth': str(self.month),
+            'fromYear': str(self.year),
+            'toDay': str(last_day),
+            'toMonth': str(self.month),
+            'toYear': str(self.year),
             'action': 'result',
             # 'sortType': 'Date',
             # 'orderBy': 'ASC',
@@ -109,14 +132,14 @@ class IbmandiriSpider(scrapy.Spider):
     def parse_mutation_page(self, response):
 
         # get the last ballance
-        self.last_ballance = float(response.css('#openingbal > span::text').extract_first().replace('.', '').replace(',', '.'))
+        self.last_ballance = float(response.css(
+            '#openingbal > span::text').extract_first().replace('.', '').replace(',', '.'))
 
         # yield {'hello': 'world'}
         # yield {'response': response.text}
 
         # for row in response.xpath('//table'):
         #     yield {'row': row.extract()}
-
 
         for index, row in enumerate(response.xpath('//table[3]//tr')):
             loader = ItemLoader(
