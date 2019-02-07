@@ -155,6 +155,8 @@ class IbmandiriSpider(scrapy.Spider):
             loader.add_xpath('keluar', './td[3]/text()')
             loader.add_xpath('masuk', './td[4]/text()')
 
+            self.logger.warning(row.extract())
+
             yield loader.load_item()
 
     def parse_check_saldo_page(self, response):

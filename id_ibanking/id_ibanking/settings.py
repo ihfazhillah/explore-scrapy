@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
 
 # Scrapy settings for id_ibanking project
 #
@@ -8,6 +10,12 @@
 #     https://doc.scrapy.org/en/latest/topics/settings.html
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+
+sys.path.append('/home/eko/leanr-scrapy/ibanking_web')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ibanking_web.settings'
+
+import django
+django.setup()
 
 BOT_NAME = 'id_ibanking'
 
@@ -69,6 +77,7 @@ ITEM_PIPELINES = {
     'id_ibanking.pipelines.IdIbankingHashPipeline': 100,
     'id_ibanking.pipelines.IdIbankingParseFloatPipeline': 200,
     'id_ibanking.pipelines.AddBallancePipeline': 300,
+    'id_ibanking.pipelines.DjangoItemPipeline': 400,
     # 'id_ibanking.pipelines.IdIbankingPipeline': 300,
 }
 

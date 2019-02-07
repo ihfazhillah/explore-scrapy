@@ -5,6 +5,8 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import hashlib
+import json
+from ibanking.models import ScrapyItem
 
 
 class IdIbankingPipeline(object):
@@ -39,5 +41,27 @@ class AddBallancePipeline(object):
         spider.last_ballance -= item['keluar']
         spider.last_ballance += item['masuk']
         item['ballance'] = spider.last_ballance
+        return item
+
+
+class DjangoItemPipeline(object):
+    def __init__(self, unique_id, *args, **kwargs):
+        self.unique_id = unique_id
+        self.items = []
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+                unique_id=crawler.settings.get('unique_id')
+        )
+
+    def close_spider(self, spider):
+        item = ScrapyItem()
+        item.unique_id = self.unique_id
+        item.data = json.dumps(self.items)
+        item.save()
+
+    def process_item(self, item, spider):
+        self.items.append(dict(item))
         return item
 

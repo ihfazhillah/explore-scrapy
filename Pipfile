@@ -7,6 +7,8 @@ name = "pypi"
 
 [packages]
 scrapy = "*"
+django = "*"
+python-scrapyd-api = "*"
 
 [requires]
 python_version = "3.6"
