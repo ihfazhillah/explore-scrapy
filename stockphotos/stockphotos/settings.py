@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
 
-# Scrapy settings for id_ibanking project
+# Scrapy settings for stockphotos project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -11,23 +9,17 @@ import sys
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
-sys.path.append('/home/eko/leanr-scrapy/ibanking_web')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ibanking_web.settings'
+BOT_NAME = 'stockphotos'
 
-import django
-django.setup()
-
-BOT_NAME = 'id_ibanking'
-
-SPIDER_MODULES = ['id_ibanking.spiders']
-NEWSPIDER_MODULE = 'id_ibanking.spiders'
+SPIDER_MODULES = ['stockphotos.spiders']
+NEWSPIDER_MODULE = 'stockphotos.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'id_ibanking (+http://www.yourdomain.com)'
+#USER_AGENT = 'stockphotos (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -47,22 +39,21 @@ ROBOTSTXT_OBEY = False
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-DEFAULT_REQUEST_HEADERS = {
-   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-   'Accept-Language': 'en',
-   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
-}
+#DEFAULT_REQUEST_HEADERS = {
+#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+#   'Accept-Language': 'en',
+#}
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'id_ibanking.middlewares.IdIbankingSpiderMiddleware': 543,
+#    'stockphotos.middlewares.StockphotosSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'id_ibanking.middlewares.IdIbankingDownloaderMiddleware': 543,
+#    'stockphotos.middlewares.StockphotosDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -74,15 +65,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'id_ibanking.pipelines.IdIbankingHashPipeline': 100,
-    'id_ibanking.pipelines.IdIbankingParseFloatPipeline': 200,
-    'id_ibanking.pipelines.AddBallancePipeline': 300,
-    'id_ibanking.pipelines.DjangoItemPipeline': 400,
-    # 'id_ibanking.pipelines.IdIbankingPipeline': 300,
+    # 'stockphotos.pipelines.StockphotosPipeline': 300,
+    'scrapy.pipelines.images.ImagesPipeline': 300
 }
-
-SPIDER_CONTRACTS = {
-    'id_banking.contracts.LoggedInSuccessText': 10,
+IMAGES_STORE = '/home/eko/burst_shopify'
+IMAGES_THUMBS = {
+    'small': (50, 50),
+    'big': (270, 270),
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -105,5 +94,3 @@ SPIDER_CONTRACTS = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-

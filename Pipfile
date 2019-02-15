@@ -9,6 +9,7 @@ name = "pypi"
 scrapy = "*"
 django = "*"
 python-scrapyd-api = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"

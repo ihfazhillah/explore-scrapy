@@ -53,8 +53,12 @@ class IbmandiriSpider(scrapy.Spider):
         )
 
     def parse_welcome(self, response):
-        if 'SELAMAT DATANG' not in response.text:
-            raise scrapy.exceptions.CloseSpider('Login failed')
+        """
+        @url https://ib.bankmandiri.co.id/retail/Welcome.do?action=result
+        @success_text Hello world
+        """
+        # if 'SELAMAT DATANG' not in response.text:
+        #     raise scrapy.exceptions.CloseSpider('Login failed')
         return scrapy.Request(
             'https://ib.bankmandiri.co.id/retail/TrxHistoryInq.do?action=form',
             callback=self.parse_account_id
